@@ -9,30 +9,46 @@ graph = {
 
 h = {'A': 5, 'B': 4, 'C': 2, 'D': 5, 'E': 1, 'G': 0}
 
-def astar(start, goal):
-    open_list = [[h[start], 0, start]]
-    parent = {start: None}
+nodes = [[5, 0, 'A']]
+parent = {'A': None}
+cost = {'A': 0}
+visited = []
 
-    while open_list:
-        open_list.sort()
-        f, g, node = open_list.pop(0)
+while nodes:
+    nodes.sort()
+    current = nodes.pop(0)
 
-        if node == goal:
-            path = []
-            while node:
-                path.append(node)
-                node = parent[node]
-            print("Path:", path[::-1])
-            print("Cost:", g)
-            return
+    total_cost = current[0]
+    actual_cost = current[1]
+    node = current[2]
 
-        for next_node, cost in graph[node]:
-            new_g = g + cost
-            new_f = new_g + h[next_node]
+    if node in visited:
+        continue
 
-            parent[next_node] = node
-            open_list.append([new_f, new_g, next_node])
+    visited.append(node)
+    print("Visited:", node)
 
-    print("No path found")
+    if node == 'G':
+        break
 
-astar('A', 'G')
+    for neighbour, weight in graph[node]:
+        new_cost = actual_cost + weight
+
+        if neighbour not in cost or new_cost < cost[neighbour]:
+            cost[neighbour] = new_cost
+            parent[neighbour] = node
+            nodes.append([new_cost + h[neighbour], new_cost, neighbour])
+
+if 'G' in visited:
+    path = []
+    node = 'G'
+
+    while node is not None:
+        path.append(node)
+        node = parent[node]
+
+    path.reverse()
+    print("Path:", path)
+    print("Total Cost:", cost['G'])
+else:
+    print("Goal not found")
